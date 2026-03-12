@@ -16,6 +16,8 @@ import (
 	"google.golang.org/genai"
 )
 
+//get api  from  https://aistudio.google.com/
+
 const (
 	DefaultHistoryDir = ".history"
 	DefaultMaxHistory = 20 // 20 条消息，不是 20 轮

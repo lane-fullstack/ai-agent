@@ -10,12 +10,12 @@ Features
 - SQLite (pure Go driver)
 
 ## Setup
-
-export TELEGRAM_TOKEN=xxxx
-export TELEGRAM_CHAT_ID=xxxx
+* set config.json.dev remove .dev
+* get Gemini Api   https://aistudio.google.com/
+* get Gmail API https://console.cloud.google.com/apis/api/gmail.googleapis.com
 
 go mod tidy
-go run ./cmd/server
+go run . start
 
 
 启动服务: go run main.go start
