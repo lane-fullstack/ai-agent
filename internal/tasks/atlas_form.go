@@ -15,7 +15,7 @@ func init() {
 func SubmitAtlasForm(taskId int64) (string, error) {
 
 	cfg := config.Load()
-	path := config.AsString(cfg["ResumePath"])
+	path, _ := config.GetFrom[string](cfg, "ResumePath")
 	if path == "" {
 		path = "./resume.pdf"
 	}

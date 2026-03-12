@@ -15,9 +15,7 @@ var geminiCmd = &cobra.Command{
 	Use:   "gemini",
 	Short: "Interact with the Gemini provider",
 	Run: func(cmd *cobra.Command, args []string) {
-		//apiKey := os.Getenv("GEMINI_API_KEY")
-		cfg := config.Load()
-		apiKey := config.AsString(cfg["GeminiAPIKey"])
+		apiKey, _ := config.Get[string]("GeminiAPIKey")
 		if apiKey == "" {
 			log.Fatal("Please set GEMINI_API_KEY environment variable")
 		}

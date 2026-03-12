@@ -24,9 +24,8 @@ type TranslateResponse struct {
 }
 
 func Translate(text string) (string, error) {
-	cfg := config.Load()
-	url := config.AsString(cfg["TranslateAPI"])
-	apiKey := config.AsString(cfg["TranslateKey"])
+	url, _ := config.Get[string]("TranslateAPI")
+	apiKey, _ := config.Get[string]("TranslateKey")
 
 	reqBody := TranslateRequest{
 		Texts:  []string{text},

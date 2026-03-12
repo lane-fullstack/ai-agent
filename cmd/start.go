@@ -18,7 +18,8 @@ var startCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg := config.Load()
 
-		database, err := db.Init(config.AsString(cfg["DBPath"]))
+		dbPath, _ := config.GetFrom[string](cfg, "DBPath")
+		database, err := db.Init(dbPath)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -27,7 +28,8 @@ var startCmd = &cobra.Command{
 
 		sched := scheduler.New(database, bot)
 		// 初始化 provider
-		llm, err := provider.NewGeminiProvider(config.AsString(cfg["GeminiAPIKey"]))
+		apiKey, _ := config.GetFrom[string](cfg, "GeminiAPIKey")
+		llm, err := provider.NewGeminiProvider(apiKey)
 		if err != nil {
 			log.Fatal(err)
 		}

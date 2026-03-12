@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -134,9 +135,24 @@ func loadConfigFile() (map[string]any, time.Time, error) {
 }
 
 func applyDefaults(cfg map[string]any) {
-	if AsString(cfg["TranslateAPI"]) == "" {
+	if value, _ := cast[string](cfg["TranslateAPI"]); value == "" {
 		cfg["TranslateAPI"] = "http://localhost:5050/translate"
 	}
+}
+
+func Get[T any](key string) (T, error) {
+	cfg := Load()
+	return GetFrom[T](cfg, key)
+}
+
+func GetFrom[T any](cfg map[string]any, key string) (T, error) {
+	value, ok := cfg[key]
+	if !ok {
+		var zero T
+		return zero, fmt.Errorf("config key not found: %s", key)
+	}
+
+	return cast[T](value)
 }
 
 func cloneMap(src map[string]any) map[string]any {
@@ -152,35 +168,96 @@ func cloneMap(src map[string]any) map[string]any {
 }
 
 func AsString(value any) string {
-	if value == nil {
-		return ""
-	}
-
-	if s, ok := value.(string); ok {
-		return s
-	}
-
-	return ""
+	result, _ := cast[string](value)
+	return result
 }
 
 func AsInt64Slice(value any) []int64 {
-	switch v := value.(type) {
-	case []int64:
-		return append([]int64(nil), v...)
-	case []any:
-		result := make([]int64, 0, len(v))
-		for _, item := range v {
-			switch n := item.(type) {
-			case float64:
-				result = append(result, int64(n))
-			case int64:
-				result = append(result, n)
-			case int:
-				result = append(result, int64(n))
-			}
-		}
-		return result
-	default:
-		return nil
+	result, _ := cast[[]int64](value)
+	return result
+}
+
+func cast[T any](value any) (T, error) {
+	var zero T
+	if value == nil {
+		return zero, fmt.Errorf("config value is nil")
 	}
+
+	if typed, ok := value.(T); ok {
+		return typed, nil
+	}
+
+	switch any(zero).(type) {
+	case string:
+		if v, ok := value.(string); ok {
+			return any(v).(T), nil
+		}
+	case bool:
+		if v, ok := value.(bool); ok {
+			return any(v).(T), nil
+		}
+	case int:
+		switch v := value.(type) {
+		case int:
+			return any(v).(T), nil
+		case int64:
+			return any(int(v)).(T), nil
+		case float64:
+			return any(int(v)).(T), nil
+		}
+	case int64:
+		switch v := value.(type) {
+		case int:
+			return any(int64(v)).(T), nil
+		case int64:
+			return any(v).(T), nil
+		case float64:
+			return any(int64(v)).(T), nil
+		}
+	case float64:
+		switch v := value.(type) {
+		case int:
+			return any(float64(v)).(T), nil
+		case int64:
+			return any(float64(v)).(T), nil
+		case float64:
+			return any(v).(T), nil
+		}
+	case []int64:
+		switch v := value.(type) {
+		case []int64:
+			return any(append([]int64(nil), v...)).(T), nil
+		case []any:
+			result := make([]int64, 0, len(v))
+			for _, item := range v {
+				n, err := cast[int64](item)
+				if err != nil {
+					return zero, err
+				}
+				result = append(result, n)
+			}
+			return any(result).(T), nil
+		}
+	case []string:
+		switch v := value.(type) {
+		case []string:
+			return any(append([]string(nil), v...)).(T), nil
+		case []any:
+			result := make([]string, 0, len(v))
+			for _, item := range v {
+				s, err := cast[string](item)
+				if err != nil {
+					return zero, err
+				}
+				result = append(result, s)
+			}
+			return any(result).(T), nil
+		}
+	case map[string]any:
+		if v, ok := value.(map[string]any); ok {
+			return any(cloneMap(v)).(T), nil
+		}
+	}
+
+	return zero, fmt.Errorf("config value type mismatch: want %T, got %T", zero, value)
 }

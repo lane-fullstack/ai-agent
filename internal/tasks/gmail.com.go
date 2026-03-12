@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"ai-agent/internal/config"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -15,20 +16,20 @@ import (
 )
 
 const (
-	credentialsFile = "./data/credentials/google_ruok6688.json"
-	tokenFile       = "./data/credentials/token.json"
+	credentialsFile = "/google_ruok6688.json"
+	tokenFile       = "/token.json"
 )
 
 func CleanMail(taskId int64) {
 
 	ctx := context.Background()
-
-	b, err := os.ReadFile(credentialsFile)
+	dir, _ := config.Get[string]("GmailAuthDir")
+	b, err := os.ReadFile(dir + credentialsFile)
 	if err != nil {
 		log.Fatal("Unable to read credentials:", err)
 	}
 
-	config, err := google.ConfigFromJSON(
+	cfg, err := google.ConfigFromJSON(
 		b,
 		gmail.GmailModifyScope,
 	)
@@ -37,7 +38,7 @@ func CleanMail(taskId int64) {
 		log.Fatal(err)
 	}
 
-	config.RedirectURL = "http://localhost:8080"
+	cfg.RedirectURL = "http://localhost:8080"
 
 	tokenChan := make(chan *oauth2.Token)
 
@@ -53,13 +54,13 @@ func CleanMail(taskId int64) {
 				return
 			}
 
-			tok, err := config.Exchange(ctx, code)
+			tok, err := cfg.Exchange(ctx, code)
 			if err != nil {
 				http.Error(w, "Token exchange failed", 500)
 				log.Fatal(err)
 			}
 
-			saveToken(tokenFile, tok)
+			saveToken(dir+tokenFile, tok)
 
 			fmt.Fprintf(w, "Login successful. You can close this window.")
 
@@ -70,7 +71,7 @@ func CleanMail(taskId int64) {
 		log.Fatal(http.ListenAndServe(":8080", nil))
 	}()
 
-	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
+	authURL := cfg.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
 
 	fmt.Println("Open this URL in browser:")
 	fmt.Println(authURL)
@@ -83,7 +84,7 @@ func CleanMail(taskId int64) {
 		log.Fatal("OAuth timeout")
 	}
 
-	client := config.Client(ctx, tok)
+	client := cfg.Client(ctx, tok)
 
 	srv, err := gmail.New(client)
 	if err != nil {
