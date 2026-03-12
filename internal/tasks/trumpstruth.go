@@ -4,6 +4,7 @@ import (
 	"ai-agent/internal/db"
 	"ai-agent/internal/executor"
 	"ai-agent/internal/http"
+	"ai-agent/internal/translator"
 	"bytes"
 	"database/sql"
 	"errors"
@@ -107,7 +108,7 @@ func FetchTrumpTruths(taskId int64) (string, error) {
 
 		// Translate content
 		// We do this AFTER checking DB to save API calls
-		translatedContent, err := Translate(content)
+		translatedContent, err := translator.Translate(content)
 		fmt.Println("-----------translatedContent:", translatedContent)
 		if err != nil {
 			log.Printf("Translation failed for ID %s: %v", id, err)

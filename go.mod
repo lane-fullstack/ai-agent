@@ -4,6 +4,7 @@ go 1.26
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
+	github.com/fsnotify/fsnotify v1.7.0
 	github.com/go-resty/resty/v2 v2.11.0
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/playwright-community/playwright-go v0.5700.1

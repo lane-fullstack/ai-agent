@@ -59,7 +59,7 @@ var listTasksCmd = &cobra.Command{
 	Short: "List all tasks",
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg := config.Load()
-		database, err := db.Init(cfg.DBPath)
+		database, err := db.Init(config.AsString(cfg["DBPath"]))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -103,7 +103,7 @@ var addTaskCmd = &cobra.Command{
 		}
 
 		cfg := config.Load()
-		database, err := db.Init(cfg.DBPath)
+		database, err := db.Init(config.AsString(cfg["DBPath"]))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -136,7 +136,7 @@ var updateTaskCmd = &cobra.Command{
 		}
 
 		cfg := config.Load()
-		database, err := db.Init(cfg.DBPath)
+		database, err := db.Init(config.AsString(cfg["DBPath"]))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -202,7 +202,7 @@ var deleteTaskCmd = &cobra.Command{
 		}
 
 		cfg := config.Load()
-		database, err := db.Init(cfg.DBPath)
+		database, err := db.Init(config.AsString(cfg["DBPath"]))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -228,7 +228,7 @@ var addScraperTaskCmd = &cobra.Command{
 		}
 
 		cfg := config.Load()
-		database, err := db.Init(cfg.DBPath)
+		database, err := db.Init(config.AsString(cfg["DBPath"]))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -257,7 +257,7 @@ var runTaskCmd = &cobra.Command{
 		}
 
 		cfg := config.Load()
-		database, err := db.Init(cfg.DBPath)
+		database, err := db.Init(config.AsString(cfg["DBPath"]))
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -1,4 +1,4 @@
-package tasks
+package translator
 
 import (
 	"ai-agent/internal/config"
@@ -25,8 +25,8 @@ type TranslateResponse struct {
 
 func Translate(text string) (string, error) {
 	cfg := config.Load()
-	url := cfg.TranslateAPI
-	apiKey := cfg.TranslateKey
+	url := config.AsString(cfg["TranslateAPI"])
+	apiKey := config.AsString(cfg["TranslateKey"])
 
 	reqBody := TranslateRequest{
 		Texts:  []string{text},

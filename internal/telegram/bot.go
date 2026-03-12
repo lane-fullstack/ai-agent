@@ -20,16 +20,17 @@ func init() {
 	BotClient = NewBot(cfg)
 }
 
-func NewBot(cfg config.Config) *Bot {
+func NewBot(cfg map[string]any) *Bot {
 
-	api, err := tgbotapi.NewBotAPI(cfg.TelegramToken)
+	api, err := tgbotapi.NewBotAPI(config.AsString(cfg["TelegramToken"]))
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var defaultChatID int64
-	if len(cfg.ChatIDs) > 0 {
-		defaultChatID = cfg.ChatIDs[0]
+	chatIDs := config.AsInt64Slice(cfg["ChatIDs"])
+	if len(chatIDs) > 0 {
+		defaultChatID = chatIDs[0]
 	}
 
 	return &Bot{

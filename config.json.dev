@@ -4,5 +4,6 @@
   "TelegramToken": "",
   "ChatIDs": [],
   "DBPath": "tasks.db",
-  "ResumePath": ""
+  "ResumePath": "",
+  "GeminiAPIKey": ""
 }

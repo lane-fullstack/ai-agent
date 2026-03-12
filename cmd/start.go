@@ -18,7 +18,7 @@ var startCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg := config.Load()
 
-		database, err := db.Init(cfg.DBPath)
+		database, err := db.Init(config.AsString(cfg["DBPath"]))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -27,7 +27,7 @@ var startCmd = &cobra.Command{
 
 		sched := scheduler.New(database, bot)
 		// 初始化 provider
-		llm, err := provider.NewGeminiProvider(cfg.GeminiAPIKey)
+		llm, err := provider.NewGeminiProvider(config.AsString(cfg["GeminiAPIKey"]))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -36,7 +36,7 @@ var startCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-	
+
 		sched.Start()
 
 		go telegram.StartListener(bot, sched)
