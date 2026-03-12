@@ -1,0 +1,14 @@
+[
+  {
+    "role": "user",
+    "parts": [
+      "Hello, who are you?"
+    ]
+  },
+  {
+    "role": "model",
+    "parts": [
+      "I am Gemini, a large language model, trained by Google. How can I help you today?"
+    ]
+  }
+]

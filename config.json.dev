@@ -1,0 +1,8 @@
+{
+  "TranslateAPI": "",
+  "TranslateKey": "your_secret_key_here",
+  "TelegramToken": "",
+  "ChatIDs": [],
+  "DBPath": "tasks.db",
+  "ResumePath": ""
+}
